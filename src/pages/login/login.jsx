@@ -3,11 +3,14 @@ import {Form, Input, Button, Checkbox} from 'antd';
 import {UserOutlined, LockOutlined} from '@ant-design/icons';
 import './login.less'
 import logo from './images/logo.png'
+import {reqLogin} from '../../api'
 
 export default class Login extends Component {
     render() {
-        const onFinish = (values) => {
-            console.log(values);
+        const onFinish = async (values) => {
+            const {username, password} = values
+            const response = await reqLogin(username, password)
+            console.log('success', response.data)
         }
         return (
             <div className="login">
