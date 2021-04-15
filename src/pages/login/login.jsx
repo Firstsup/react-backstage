@@ -1,16 +1,31 @@
 import React, {Component} from 'react'
-import {Form, Input, Button, Checkbox} from 'antd';
+import {Redirect} from 'react-router-dom'
+import {Form, Input, Button, Checkbox, message} from 'antd';
 import {UserOutlined, LockOutlined} from '@ant-design/icons';
 import './login.less'
 import logo from './images/logo.png'
 import {reqLogin} from '../../api'
+import memoryUtils from "../../utils/memoryUtils";
+import storageUtils from "../../utils/storageUtils";
 
 export default class Login extends Component {
     render() {
+        const user = memoryUtils.user
+        if (user && user._id) {
+            return <Redirect to='/'/>
+        }
         const onFinish = async (values) => {
             const {username, password} = values
-            const response = await reqLogin(username, password)
-            console.log('success', response.data)
+            const result = await reqLogin(username, password)
+            if (result.status === 0) {
+                message.success('success')
+                const user = result.data
+                memoryUtils.user = user
+                storageUtils.saveUser(user)
+                this.props.history.replace('/admin')
+            } else {
+                message.error(result.msg)
+            }
         }
         return (
             <div className="login">
